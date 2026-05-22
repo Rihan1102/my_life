@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的人生回味片段</title>
+    <style>
+        /* BASE STYLES: Black background for movie atmosphere */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+            /* Flex center for the overall structure */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            /* Header must move out of the way later */
+            transition: margin 0.3s ease;
+        }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; letter-spacing: 2px; }
+        p { color: #888; font-size: 0.95rem; }
+        
+        /* THE CONTAINER: Centered Grid when not expanded */
+        .video-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 900px;
+            justify-content: center;
+            position: relative; /* Context for children */
+        }
+        
+        /* VIDEO CARD (The thumbnail look) */
+        .video-card {
+            width: 380px;
+            background: #1c1c1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.4s ease; /* Smooth transition for expansion */
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Visual feedback on hover */
+        .video-card:hover:not(.expanded) {
+            transform: scale(1.03) translateY(-5px);
+        }
+        
+        /* 16:9 aspect ratio forced on the thumbnail */
+        .thumbnail-box {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 */
+            background: #000;
+            overflow: hidden;
+        }
+        
+        /* The Actual Video Element: Forced to cover the thumbnail box */
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Fill the frame without stretching */
+            border-radius: 8px 8px 0 0;
+            display: block;
+        }
+        
+        .video-info {
+            padding: 15px;
+            background-color: #1c1c1e;
+            transition: all 0.3s ease;
+        }
+        .video-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* ========================================= */
+        /* KEY UPGRADE: The "Expanded" Class */
+        /* Triggered by JS to occupy browser scope */
+        /* ========================================= */
+        
+        /* When expanded, the video card occupies the whole viewport */
+        .video-card.expanded {
+            position: fixed; /* Takes it out of document flow */
+            top: 0;
+            left: 0;
+            width: 100vw;  /* Viewport Width (100%) */
+            height: 100vh; /* Viewport Height (100%) */
+            border-radius: 0; /* Remove rounded corners */
+            z-index: 1000; /* Stack it above everything else (header, footer) */
+            cursor: default; /* No longer a 'pointer' finger */
+            box-shadow: none;
+            background: #000; /* Pure black background during play */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The thumbnail-box must also expand to cover the whole screen */
+        .video-card.expanded .thumbnail-box {
+            padding-top: 0; /* Aspect ratio is no longer needed when fixed */
+            width: 100%;
+            height: 100%; /* Fill the expanded parent */
+        }
+
+        /* The actual video element within the expanded box */
+        .video-card.expanded video {
+            border-radius: 0;
+            object-fit: contain; /* CRITICAL: Show full video frame (with black bars if needed), do not crop */
+        }
+        
+        /* Hide the info bar when playing in theater mode */
+        .video-card.expanded .video-info {
+            display: none;
+        }
+
+        /* Create a custom 'Exit Theater Mode' button */
+        .close-theater {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 3rem;
+            font-weight: 200;
+            cursor: pointer;
+            z-index: 2000; /* Stays above the expanded video */
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+        /* Show the close button only when a video is expanded */
+        body.mode-theater .close-theater {
+            display: block;
+        }
+        
+        /* Prevent body scrolling when a video is expanded */
+        body.mode-theater {
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Our Custom 'Exit' button -->
+    <button class="close-theater" onclick="closeTheater()">&times;</button>
+
+    <header id="mainHeader">
+        <h1>🎬 人生值得回味的片段</h1>
+        <p>点击下方封面，开启沉浸式（浏览器全屏）播放</p>
+    </header>
+
+    <div class="video-container">
+
+        <!-- 视频 1 -->
+        <!-- Added unique IDs to manage the specific video elements -->
+        <div class="video-card" id="card1" onclick="toggleTheater('card1', 'v1')">
+            <div class="thumbnail-box">
+                <!-- Using object-fit:cover for thumbnails (cropping) and preload:metadata for auto-poster -->
+                <video id="v1" preload="metadata" playsinline muted>
+                    <source src="video1.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="video-info">
+                <div class="video-title">第一个片段：毕业那天</div>
+            </div>
+        </div>
+
+        <!-- 视频 2 -->
+        <div class="video-card" id="card2" onclick="toggleTheater('card2', 'v2')">
+            <div class="thumbnail-box">
+                <video id="v2" preload="metadata" playsinline muted>
+                    <source src="video2.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="video-info">
+                <div class="video-title">第二个片段：旅行回忆</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- HACK FOR EXPORT: Keep video files under 100MB total if self-hosting -->
+
+    <!-- Updated JS: Managing the CSS expansion, not the hardware full screen -->
+    <script>
+        // Track the currently playing video
+        let activeVideo = null;
+        let activeCard = null;
+
+        function toggleTheater(cardId, videoId) {
+            const card = document.getElementById(cardId);
+            const video = document.getElementById(videoId);
+
+            // If a video is already expanded, do nothing (user must close first)
+            if (activeCard) return;
+
+            // 1. Mark body state
+            document.body.classList.add('mode-theater');
+            
+            // 2. Expand the clicked card
+            card.classList.add('expanded');
+            
+            // 3. Show native controls, un-mute, and play
+            video.controls = true;
+            video.muted = false; // Must unmute since browser allows play
+            video.play();
+            
+            // Set references
+            activeVideo = video;
+            activeCard = card;
+        }
+
+        function closeTheater() {
+            if (!activeCard || !activeVideo) return;
+
+            // 1. Remove body state (allowing scroll)
+            document.body.classList.remove('mode-theater');
+            
+            // 2. Shrink the active card
+            activeCard.classList.remove('expanded');
+            
+            // 3. Stop play, hide controls, re-mute for safety
+            activeVideo.pause();
+            activeVideo.controls = false;
+            activeVideo.muted = true;
+            
+            // Reset references
+            activeVideo = null;
+            activeCard = null;
+        }
+        
+        // Bonus: Allow 'Esc' key to close the theater mode
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && activeCard) {
+                closeTheater();
+            }
+        });
+    </script>
+
+</body>
+</html>
