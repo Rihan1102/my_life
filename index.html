@@ -116,7 +116,7 @@
 
     <header>
         <h1>揉合生命千樣好 攝入相簿</h1>
-        <p>留住温度 速度 温柔和憤怒</p> /*下方小字*/
+        <p>留住温度 速度 温柔和憤怒</p> <!-- 下方小字 -->
     </header>
 
     <div class="video-container">
@@ -128,7 +128,7 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video1</div> /*video1命名*/
+                <div class="video-title">video1</div> <!--video1命名-->
             </div>
         </div>
 
@@ -140,7 +140,46 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video2</div>  /*video2命名*/
+                <div class="video-title">video2</div>  <!--video2命名-->
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频 3：data-router="video2" -->
+        <div class="video-card" id="card_video3" data-router="video3" onclick="navigateToVideo('video3')">
+            <div class="thumbnail-box">
+                <video id="v_video3" preload="metadata" playsinline muted>
+                    <source src="video3.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="video-info">
+                <div class="video-title">video3</div>  <!--video3命名-->
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频 4：data-router="video4" -->
+        <div class="video-card" id="card_video4" data-router="video4" onclick="navigateToVideo('video4')">
+            <div class="thumbnail-box">
+                <video id="v_video4" preload="metadata" playsinline muted>
+                    <source src="video4.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="video-info">
+                <div class="video-title">video4</div>  <!--video4命名-->
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频 5：data-router="video5" -->
+        <div class="video-card" id="card_video5" data-router="video5" onclick="navigateToVideo('video5')">
+            <div class="thumbnail-box">
+                <video id="v_video5" preload="metadata" playsinline muted>
+                    <source src="video5.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="video-info">
+                <div class="video-title">video5</div>  <!--video5命名-->
             </div>
         </div>
     </div>
