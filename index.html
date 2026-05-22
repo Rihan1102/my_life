@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的沙龙</title>
+    <title>📸我的沙龙</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -23,16 +23,17 @@
         h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; letter-spacing: 2px; }
         p { color: #888; font-size: 0.95rem; }
         
+        /* 核心修改：限制最大宽度并调整响应式基准，确保大屏下完美一行 3 列 */
         .video-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
-            max-width: 900px;
+            gap: 24px;
+            max-width: 1200px; /* 拓宽容器以容纳 3 列 */
             justify-content: center;
         }
         
         .video-card {
-            width: 380px;
+            width: 360px; /* 微调宽度，更适合 3 列平铺 */
             background: #1c1c1e;
             border-radius: 12px;
             overflow: hidden;
@@ -107,7 +108,7 @@
         }
         body.mode-theater .close-theater { display: block; }
         body.mode-theater { overflow: hidden; }
-        body.mode-theater header { opacity: 0; } /* 全屏时隐藏头部，防止穿帮 */
+        body.mode-theater header { opacity: 0; } 
     </style>
 </head>
 <body>
@@ -119,8 +120,10 @@
         <p>留住温度 速度 温柔和憤怒</p> <!-- 下方小字 -->
     </header>
 
+    <!-- 所有视频卡片现在都在这个正确的全局 video-container 内部 -->
     <div class="video-container">
-        <!-- 视频 1：注意看这里的 data-router="video1" -->
+        
+        <!-- 视频 1 -->
         <div class="video-card" id="card_video1" data-router="video1" onclick="navigateToVideo('video1')">
             <div class="thumbnail-box">
                 <video id="v_video1" preload="metadata" playsinline muted>
@@ -128,11 +131,11 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video1</div> <!--video1命名-->
+                <div class="video-title">video1</div>
             </div>
         </div>
 
-        <!-- 视频 2：data-router="video2" -->
+        <!-- 视频 2 -->
         <div class="video-card" id="card_video2" data-router="video2" onclick="navigateToVideo('video2')">
             <div class="thumbnail-box">
                 <video id="v_video2" preload="metadata" playsinline muted>
@@ -140,12 +143,11 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video2</div>  <!--video2命名-->
+                <div class="video-title">video2</div>
             </div>
         </div>
-    </div>
 
-    <!-- 视频 3：data-router="video2" -->
+        <!-- 视频 3 -->
         <div class="video-card" id="card_video3" data-router="video3" onclick="navigateToVideo('video3')">
             <div class="thumbnail-box">
                 <video id="v_video3" preload="metadata" playsinline muted>
@@ -153,12 +155,11 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video3</div>  <!--video3命名-->
+                <div class="video-title">video3</div>
             </div>
         </div>
-    </div>
 
-    <!-- 视频 4：data-router="video4" -->
+        <!-- 视频 4 -->
         <div class="video-card" id="card_video4" data-router="video4" onclick="navigateToVideo('video4')">
             <div class="thumbnail-box">
                 <video id="v_video4" preload="metadata" playsinline muted>
@@ -166,12 +167,11 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video4</div>  <!--video4命名-->
+                <div class="video-title">video4</div>
             </div>
         </div>
-    </div>
 
-    <!-- 视频 5：data-router="video5" -->
+        <!-- 视频 5 -->
         <div class="video-card" id="card_video5" data-router="video5" onclick="navigateToVideo('video5')">
             <div class="thumbnail-box">
                 <video id="v_video5" preload="metadata" playsinline muted>
@@ -179,30 +179,38 @@
                 </video>
             </div>
             <div class="video-info">
-                <div class="video-title">video5</div>  <!--video5命名-->
+                <div class="video-title">video5</div>
             </div>
         </div>
-    </div>
+
+        <!-- 视频 6：新增加的位置 -->
+        <div class="video-card" id="card_video6" data-router="video6" onclick="navigateToVideo('video6')">
+            <div class="thumbnail-box">
+                <video id="v_video6" preload="metadata" playsinline muted>
+                    <source src="video6.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="video-info">
+                <div class="video-title">video6</div>
+            </div>
+        </div>
+
+    </div> <!-- video-container 在这里统一关闭 -->
 
     <script>
         let currentOpenVideoId = null;
 
-        // 用户点击封面时触发：改变网址
         function navigateToVideo(videoRouterName) {
-            // 这行代码会改变浏览器的网址，触发下面的路由监听器
             window.location.hash = '/' + videoRouterName;
         }
 
-        // 用户点击关闭按钮时触发：清空网址
         function exitTheaterMode() {
             window.location.hash = '';
         }
 
-        // 核心路由中央处理器：专门负责盯死网址栏
         function handleRouting() {
-            const hash = window.location.hash; // 获取当前网址的 #/xxxx 部分
+            const hash = window.location.hash; 
             
-            // 1. 如果网址是空的（或者只有#），说明是首页状态，关闭所有全屏
             if (!hash || hash === '#/') {
                 if (currentOpenVideoId) {
                     const card = document.getElementById('card_' + currentOpenVideoId);
@@ -220,18 +228,15 @@
                 return;
             }
 
-            // 2. 如果网址形如 #/video1，解析出其中的 'video1'
             const routerName = hash.replace('#/', '');
             const card = document.getElementById('card_' + routerName);
             const video = document.getElementById('v_' + routerName);
 
-            // 防错机制：如果用户在网址乱打字，找不到对应的视频，就直接退回首页
             if (!card || !video) {
                 window.location.hash = '';
                 return;
             }
 
-            // 3. 执行全屏播放逻辑
             document.body.classList.add('mode-theater');
             card.classList.add('expanded');
             video.controls = true;
@@ -240,13 +245,9 @@
             currentOpenVideoId = routerName;
         }
 
-        // 让浏览器死死盯住网址的变化，只要网址一变，立刻执行 handleRouting
         window.addEventListener('hashchange', handleRouting);
-        
-        // 网页第一次加载时，也要检查一次网址（实现直达特定视频功能）
         window.addEventListener('load', handleRouting);
 
-        // 允许按 Esc 键退出
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
                 exitTheaterMode();
