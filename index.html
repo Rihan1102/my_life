@@ -5,131 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的人生回味片段</title>
     <style>
-        /* BASE STYLES: Black background for movie atmosphere */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #000000;
             color: #ffffff;
             margin: 0;
             padding: 40px 20px;
-            /* Flex center for the overall structure */
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
         header {
             text-align: center;
             margin-bottom: 50px;
-            /* Header must move out of the way later */
-            transition: margin 0.3s ease;
+            transition: opacity 0.3s;
         }
         h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; letter-spacing: 2px; }
         p { color: #888; font-size: 0.95rem; }
         
-        /* THE CONTAINER: Centered Grid when not expanded */
         .video-container {
             display: flex;
             flex-wrap: wrap;
             gap: 30px;
             max-width: 900px;
             justify-content: center;
-            position: relative; /* Context for children */
         }
         
-        /* VIDEO CARD (The thumbnail look) */
         .video-card {
             width: 380px;
             background: #1c1c1e;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: all 0.4s ease; /* Smooth transition for expansion */
+            transition: all 0.4s ease;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
         }
-        
-        /* Visual feedback on hover */
         .video-card:hover:not(.expanded) {
             transform: scale(1.03) translateY(-5px);
         }
         
-        /* 16:9 aspect ratio forced on the thumbnail */
         .thumbnail-box {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* 16:9 */
+            padding-top: 56.25%;
             background: #000;
-            overflow: hidden;
         }
-        
-        /* The Actual Video Element: Forced to cover the thumbnail box */
         video {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Fill the frame without stretching */
+            object-fit: cover;
             border-radius: 8px 8px 0 0;
-            display: block;
         }
         
         .video-info {
             padding: 15px;
             background-color: #1c1c1e;
-            transition: all 0.3s ease;
         }
-        .video-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: #fff;
-        }
+        .video-title { font-size: 1.05rem; font-weight: 600; color: #fff; }
 
-        /* ========================================= */
-        /* KEY UPGRADE: The "Expanded" Class */
-        /* Triggered by JS to occupy browser scope */
-        /* ========================================= */
-        
-        /* When expanded, the video card occupies the whole viewport */
+        /* 影院全屏模式 */
         .video-card.expanded {
-            position: fixed; /* Takes it out of document flow */
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;  /* Viewport Width (100%) */
-            height: 100vh; /* Viewport Height (100%) */
-            border-radius: 0; /* Remove rounded corners */
-            z-index: 1000; /* Stack it above everything else (header, footer) */
-            cursor: default; /* No longer a 'pointer' finger */
-            box-shadow: none;
-            background: #000; /* Pure black background during play */
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            z-index: 1000;
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
-        /* The thumbnail-box must also expand to cover the whole screen */
         .video-card.expanded .thumbnail-box {
-            padding-top: 0; /* Aspect ratio is no longer needed when fixed */
+            padding-top: 0;
             width: 100%;
-            height: 100%; /* Fill the expanded parent */
+            height: 100%;
         }
-
-        /* The actual video element within the expanded box */
         .video-card.expanded video {
             border-radius: 0;
-            object-fit: contain; /* CRITICAL: Show full video frame (with black bars if needed), do not crop */
+            object-fit: contain;
         }
-        
-        /* Hide the info bar when playing in theater mode */
-        .video-card.expanded .video-info {
-            display: none;
-        }
+        .video-card.expanded .video-info { display: none; }
 
-        /* Create a custom 'Exit Theater Mode' button */
+        /* 关闭按钮 */
         .close-theater {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             top: 20px;
             right: 20px;
@@ -137,42 +101,29 @@
             font-size: 3rem;
             font-weight: 200;
             cursor: pointer;
-            z-index: 2000; /* Stays above the expanded video */
+            z-index: 2000;
             background: none;
             border: none;
-            outline: none;
         }
-
-        /* Show the close button only when a video is expanded */
-        body.mode-theater .close-theater {
-            display: block;
-        }
-        
-        /* Prevent body scrolling when a video is expanded */
-        body.mode-theater {
-            overflow: hidden;
-        }
-
+        body.mode-theater .close-theater { display: block; }
+        body.mode-theater { overflow: hidden; }
+        body.mode-theater header { opacity: 0; } /* 全屏时隐藏头部，防止穿帮 */
     </style>
 </head>
 <body>
 
-    <!-- Our Custom 'Exit' button -->
-    <button class="close-theater" onclick="closeTheater()">&times;</button>
+    <button class="close-theater" onclick="exitTheaterMode()">&times;</button>
 
-    <header id="mainHeader">
+    <header>
         <h1>🎬 人生值得回味的片段</h1>
-        <p>点击下方封面，开启沉浸式（浏览器全屏）播放</p>
+        <p>点击下方封面开启全屏，观察网址栏的变化</p>
     </header>
 
     <div class="video-container">
-
-        <!-- 视频 1 -->
-        <!-- Added unique IDs to manage the specific video elements -->
-        <div class="video-card" id="card1" onclick="toggleTheater('card1', 'v1')">
+        <!-- 视频 1：注意看这里的 data-router="video1" -->
+        <div class="video-card" id="card_video1" data-router="video1" onclick="navigateToVideo('video1')">
             <div class="thumbnail-box">
-                <!-- Using object-fit:cover for thumbnails (cropping) and preload:metadata for auto-poster -->
-                <video id="v1" preload="metadata" playsinline muted>
+                <video id="v_video1" preload="metadata" playsinline muted>
                     <source src="video1.mp4" type="video/mp4">
                 </video>
             </div>
@@ -181,10 +132,10 @@
             </div>
         </div>
 
-        <!-- 视频 2 -->
-        <div class="video-card" id="card2" onclick="toggleTheater('card2', 'v2')">
+        <!-- 视频 2：data-router="video2" -->
+        <div class="video-card" id="card_video2" data-router="video2" onclick="navigateToVideo('video2')">
             <div class="thumbnail-box">
-                <video id="v2" preload="metadata" playsinline muted>
+                <video id="v_video2" preload="metadata" playsinline muted>
                     <source src="video2.mp4" type="video/mp4">
                 </video>
             </div>
@@ -192,63 +143,74 @@
                 <div class="video-title">第二个片段：旅行回忆</div>
             </div>
         </div>
-
     </div>
 
-    <!-- HACK FOR EXPORT: Keep video files under 100MB total if self-hosting -->
-
-    <!-- Updated JS: Managing the CSS expansion, not the hardware full screen -->
     <script>
-        // Track the currently playing video
-        let activeVideo = null;
-        let activeCard = null;
+        let currentOpenVideoId = null;
 
-        function toggleTheater(cardId, videoId) {
-            const card = document.getElementById(cardId);
-            const video = document.getElementById(videoId);
+        // 用户点击封面时触发：改变网址
+        function navigateToVideo(videoRouterName) {
+            // 这行代码会改变浏览器的网址，触发下面的路由监听器
+            window.location.hash = '/' + videoRouterName;
+        }
 
-            // If a video is already expanded, do nothing (user must close first)
-            if (activeCard) return;
+        // 用户点击关闭按钮时触发：清空网址
+        function exitTheaterMode() {
+            window.location.hash = '';
+        }
 
-            // 1. Mark body state
+        // 核心路由中央处理器：专门负责盯死网址栏
+        function handleRouting() {
+            const hash = window.location.hash; // 获取当前网址的 #/xxxx 部分
+            
+            // 1. 如果网址是空的（或者只有#），说明是首页状态，关闭所有全屏
+            if (!hash || hash === '#/') {
+                if (currentOpenVideoId) {
+                    const card = document.getElementById('card_' + currentOpenVideoId);
+                    const video = document.getElementById('v_' + currentOpenVideoId);
+                    
+                    document.body.classList.remove('mode-theater');
+                    if (card) card.classList.remove('expanded');
+                    if (video) {
+                        video.pause();
+                        video.controls = false;
+                        video.muted = true;
+                    }
+                    currentOpenVideoId = null;
+                }
+                return;
+            }
+
+            // 2. 如果网址形如 #/video1，解析出其中的 'video1'
+            const routerName = hash.replace('#/', '');
+            const card = document.getElementById('card_' + routerName);
+            const video = document.getElementById('v_' + routerName);
+
+            // 防错机制：如果用户在网址乱打字，找不到对应的视频，就直接退回首页
+            if (!card || !video) {
+                window.location.hash = '';
+                return;
+            }
+
+            // 3. 执行全屏播放逻辑
             document.body.classList.add('mode-theater');
-            
-            // 2. Expand the clicked card
             card.classList.add('expanded');
-            
-            // 3. Show native controls, un-mute, and play
             video.controls = true;
-            video.muted = false; // Must unmute since browser allows play
+            video.muted = false;
             video.play();
-            
-            // Set references
-            activeVideo = video;
-            activeCard = card;
+            currentOpenVideoId = routerName;
         }
 
-        function closeTheater() {
-            if (!activeCard || !activeVideo) return;
-
-            // 1. Remove body state (allowing scroll)
-            document.body.classList.remove('mode-theater');
-            
-            // 2. Shrink the active card
-            activeCard.classList.remove('expanded');
-            
-            // 3. Stop play, hide controls, re-mute for safety
-            activeVideo.pause();
-            activeVideo.controls = false;
-            activeVideo.muted = true;
-            
-            // Reset references
-            activeVideo = null;
-            activeCard = null;
-        }
+        // 让浏览器死死盯住网址的变化，只要网址一变，立刻执行 handleRouting
+        window.addEventListener('hashchange', handleRouting);
         
-        // Bonus: Allow 'Esc' key to close the theater mode
+        // 网页第一次加载时，也要检查一次网址（实现直达特定视频功能）
+        window.addEventListener('load', handleRouting);
+
+        // 允许按 Esc 键退出
         document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape" && activeCard) {
-                closeTheater();
+            if (event.key === "Escape") {
+                exitTheaterMode();
             }
         });
     </script>
